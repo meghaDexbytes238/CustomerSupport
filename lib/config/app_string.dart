@@ -1,5 +1,6 @@
 class AppString{
   static String projectName = 'Foodgo';
+  static String defaultMsg = 'Hi, how can I help you?';
   // static String userScreenName = 'User Screen';
   // static String heartScreenName = 'Heart Screen';
   // static String commentScreenName = 'Comment Screen';

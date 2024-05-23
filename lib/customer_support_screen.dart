@@ -1,4 +1,5 @@
 import 'package:customersupport/config/app_color.dart';
+import 'package:customersupport/config/app_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -15,6 +16,7 @@ class CustomerSupportScreen extends StatefulWidget {
 class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
   TextEditingController textController = TextEditingController();
   List <String>tags = [];
+  List <String>defaultList = [];
   // void addTag() {
   //   setState(() {
   //     dynamicList.add(tagPreview(tagController.text));
@@ -49,32 +51,168 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                      : ListView.builder(
                    itemCount: tags.length,
                    itemBuilder: (context, index) {
-                     return  Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
-                       children: [
-                         Center(
-                           child: Container(
-                             margin: EdgeInsets.symmetric(
-                                 vertical: 5, horizontal: 10),
-                             padding: EdgeInsets.symmetric(
-                                 horizontal: 10, vertical: 7),
-                             decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.circular(10),
-                                 color: Colors.green),
-                             child: Text(tags[index]),
+                     return   index % 2 == 0 ?
+                     InkWell(
+                       child: Row(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                         children: [
+                           CircleAvatar(
+                             child: SvgPicture.asset('assets/images/userIcon.svg'),
+                           backgroundColor: AppColor.circleAvtarBg ,),
+                           Center(
+                             child: Container(
+                               margin: EdgeInsets.symmetric(
+                                   vertical: 5, horizontal: 10.sp),
+                               padding: EdgeInsets.symmetric(
+                                   horizontal: 10, vertical: 7.sp),
+                               decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(20.sp),
+                                   color: AppColor.lightGrey
+                               ),
+                               child: Text(defaultList[index]),
+                             ),
                            ),
+                         ],
+
+                       ),
+                       onLongPress: () {
+                         showDialog(
+                           barrierColor: Colors.white,
+                           context: context,
+                           builder: (context) => AlertDialog(
+                             backgroundColor: Colors.white,
+                             elevation: 10,
+                             title: Text("Delete msg?"),
+                             actions: [
+                               GestureDetector(
+                               child: Container(
+                                 width: 50.sp,
+                                 height: 50.sp,
+                                 decoration: BoxDecoration(
+                                   color: AppColor.red,
+                                   borderRadius: BorderRadius.all(Radius.circular(15.sp))
+                                 ),
+                                 child:  Center(child: Text("Ok",style: TextStyle(color: AppColor.white,fontWeight: FontWeight.bold),)),
+                               ),
+                                 onTap: () {
+
+                                 },
+                             ),
+                               GestureDetector(
+                                 child: Container(
+                                   width: 50.sp,
+                                   height: 50.sp,
+                                   decoration: BoxDecoration(
+                                       color: AppColor.red,
+                                       borderRadius: BorderRadius.all(Radius.circular(15.sp))
+                                   ),
+                                   child:  Center(child: Text("Cancel",style: TextStyle(color:AppColor.white,fontWeight: FontWeight.bold),)),
+                                 ),
+                                 onTap: () {
+Navigator.pop(context);
+                                 },
+                               ),
+                             ],
+                           ),
+                         );
+
+
+
+
+                       },
+                     ):
+
+                     Padding(
+                       padding:  EdgeInsets.only(left: 50.sp),
+                       child: InkWell(
+                         child: Row(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           mainAxisAlignment: MainAxisAlignment.end,
+                           //mainAxisSize: MainAxisSize.min,
+                           children: [
+                             Flexible(
+                               child: Container(
+                                 margin: EdgeInsets.symmetric(
+                                     vertical: 5.sp, horizontal: 10.sp),
+                                 padding: EdgeInsets.symmetric(
+                                     horizontal: 12.sp, vertical: 10.sp),
+                                 decoration: BoxDecoration(
+                                     borderRadius: BorderRadius.circular(20.sp),
+                                     color: AppColor.red
+                                 ),
+                                 child: Text(tags[index],),
+                               ),
+                             ),
+                             Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(image: AssetImage('assets/images/userImg.png')),
+                                borderRadius: BorderRadius.circular(30.sp),
+                                border: Border.all(width: 2.sp,color: AppColor.red)
+                              ),
+                               height: 38.sp,
+                               width: 38.sp,
+                               margin: EdgeInsets.only(top: 5.sp),
+                             ),
+                           ],
                          ),
-                       ],
+                         onLongPress: () {
+
+                           showDialog(
+                             barrierColor: Colors.white,
+
+                             context: context,
+                             builder: (context) => AlertDialog(
+                               backgroundColor: Colors.white,
+                               elevation: 10,
+                               title: Text("Delete msg?"),
+                               actions: [
+                                 GestureDetector(
+                                   child: Container(
+
+                                     width: 50.sp,
+                                     height: 50.sp,
+                                     decoration: BoxDecoration(
+                                         color: AppColor.red,
+                                         borderRadius: BorderRadius.all(Radius.circular(15.sp))
+                                     ),
+                                     child:  Center(child: Text("Ok",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+                                   ),
+                                   onTap: () {
+
+                                   },
+                                 ),
+
+
+                                 //  )
+                                 // TextButton(
+                                 //     onPressed: () {
+                                 //       // Navigator.pushReplacement(
+                                 //       //     context,
+                                 //       //     MaterialPageRoute(
+                                 //       //       builder: (context) => FirstScreenGame(),
+                                 //       //     ));
+                                 //     },
+                                 //     child: Text('Ok')),
+
+                                 TextButton(
+                                   onPressed: () {
+                                     Navigator.pop(context);
+                                   },
+                                   child: Text('Cancel'),
+                                   style: ButtonStyle(
+                                       foregroundColor:
+                                       MaterialStatePropertyAll(Colors.red)),
+                                 ),
+                               ],
+                             ),
+                           );
+                         },
+                       ),
                      );
                        //Text(tags[index]);
                    },
                  ),
-       ),
-
-               // Center(
-               //   child: Text('This is your home page'), // body: SingleChildScrollView(...)
-               // ),
-             ),
+       ),),
            Stack(
         children: [
            Container(
@@ -105,14 +243,6 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                   hintText: 'Type here...',
                   prefixIcon: const Icon(Icons.search),
                 ),
-
-                // onChanged: (value) {
-                //   setState(() {
-                //     tags.add(textController.text);
-                //     print('value msg : $tags');
-                //   });
-                // },
-                // onChanged: onChanged
               ),
             ),
           ),
@@ -127,8 +257,10 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
               child: IconButton.filledTonal(
                 onPressed: () {
                  setState(() {
-                   tags.add(textController.text);
-                   //addTag();
+                   tags.add(AppString.defaultMsg);
+                   defaultList.add(textController.text);
+                   textController.text = '';
+                   print(" tag list : $defaultList");
                    print(" tag list : $tags");
                  });
 
