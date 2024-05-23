@@ -15,7 +15,7 @@ class CustomerSupportScreen extends StatefulWidget {
 
 class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
   TextEditingController textController = TextEditingController();
-  List <String>tags = [];
+  List <ChetMessage>tags = [];
   List <String>defaultList = [];
   // void addTag() {
   //   setState(() {
@@ -51,7 +51,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                      : ListView.builder(
                    itemCount: tags.length,
                    itemBuilder: (context, index) {
-                     return   index % 2 == 0 ?
+                     return   !tags[index].isSender ?
                      InkWell(
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.start,
@@ -69,7 +69,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                                    borderRadius: BorderRadius.circular(20.sp),
                                    color: AppColor.lightGrey
                                ),
-                               child: Text(defaultList[index]),
+                               child: Text(tags[index].message),
                              ),
                            ),
                          ],
@@ -77,12 +77,15 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                        ),
                        onLongPress: () {
                          showDialog(
-                           barrierColor: Colors.white,
+                           barrierColor: Colors.transparent,
                            context: context,
                            builder: (context) => AlertDialog(
                              backgroundColor: Colors.white,
+                             surfaceTintColor: Colors.white,
+                             shadowColor: Colors.grey,
                              elevation: 10,
-                             title: Text("Delete msg?"),
+                             title: Text("Confirm Alert"),
+                             content: Text('Are you sure you want to delete this message?'),
                              actions: [
                                GestureDetector(
                                child: Container(
@@ -95,6 +98,10 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                                  child:  Center(child: Text("Ok",style: TextStyle(color: AppColor.white,fontWeight: FontWeight.bold),)),
                                ),
                                  onTap: () {
+                                 Navigator.pop(context);
+                                   setState(() {
+                                     tags.removeAt(index);
+                                   });
 
                                  },
                              ),
@@ -115,10 +122,6 @@ Navigator.pop(context);
                              ],
                            ),
                          );
-
-
-
-
                        },
                      ):
 
@@ -128,7 +131,6 @@ Navigator.pop(context);
                          child: Row(
                            crossAxisAlignment: CrossAxisAlignment.start,
                            mainAxisAlignment: MainAxisAlignment.end,
-                           //mainAxisSize: MainAxisSize.min,
                            children: [
                              Flexible(
                                child: Container(
@@ -140,7 +142,7 @@ Navigator.pop(context);
                                      borderRadius: BorderRadius.circular(20.sp),
                                      color: AppColor.red
                                  ),
-                                 child: Text(tags[index],),
+                                 child: Text(tags[index].message,),
                                ),
                              ),
                              Container(
@@ -156,10 +158,8 @@ Navigator.pop(context);
                            ],
                          ),
                          onLongPress: () {
-
                            showDialog(
-                             barrierColor: Colors.white,
-
+                             barrierColor: Colors.transparent,
                              context: context,
                              builder: (context) => AlertDialog(
                                backgroundColor: Colors.white,
@@ -168,7 +168,6 @@ Navigator.pop(context);
                                actions: [
                                  GestureDetector(
                                    child: Container(
-
                                      width: 50.sp,
                                      height: 50.sp,
                                      decoration: BoxDecoration(
@@ -178,22 +177,12 @@ Navigator.pop(context);
                                      child:  Center(child: Text("Ok",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
                                    ),
                                    onTap: () {
-
+                                     Navigator.pop(context);
+                                     setState(() {
+                                      tags.removeAt(index);
+                                     });
                                    },
                                  ),
-
-
-                                 //  )
-                                 // TextButton(
-                                 //     onPressed: () {
-                                 //       // Navigator.pushReplacement(
-                                 //       //     context,
-                                 //       //     MaterialPageRoute(
-                                 //       //       builder: (context) => FirstScreenGame(),
-                                 //       //     ));
-                                 //     },
-                                 //     child: Text('Ok')),
-
                                  TextButton(
                                    onPressed: () {
                                      Navigator.pop(context);
@@ -209,7 +198,6 @@ Navigator.pop(context);
                          },
                        ),
                      );
-                       //Text(tags[index]);
                    },
                  ),
        ),),
@@ -257,8 +245,9 @@ Navigator.pop(context);
               child: IconButton.filledTonal(
                 onPressed: () {
                  setState(() {
-                   tags.add(AppString.defaultMsg);
-                   defaultList.add(textController.text);
+
+                   tags.add(ChetMessage(message: AppString.defaultMsg,isSender: false));
+                   tags.add(ChetMessage(message: textController.text,isSender: true));
                    textController.text = '';
                    print(" tag list : $defaultList");
                    print(" tag list : $tags");
@@ -283,4 +272,10 @@ Navigator.pop(context);
 
     );
   }
+}
+
+class ChetMessage{
+  bool isSender = false;
+  String message = "";
+  ChetMessage({this.isSender = false, required this.message});
 }
