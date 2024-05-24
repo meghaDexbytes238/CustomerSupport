@@ -10,10 +10,8 @@ Future<void> main() async {
   await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
@@ -25,8 +23,8 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          //   home:  CustomerSupportScreen(),
-          home: CustomerSupportScreen()
+
+          home: const CustomerSupportScreen()
       ),
     );
 
