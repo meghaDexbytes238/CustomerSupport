@@ -1,5 +1,4 @@
 import 'package:customersupport/customer_bloc/chat_bloc.dart';
-import 'package:customersupport/practise.dart';
 import 'package:customersupport/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

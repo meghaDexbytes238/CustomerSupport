@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:customersupport/config/app_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,19 +30,15 @@ abstract class Widgets{
   }
 static Widget sendBtn({required void Function()? onPressed}){
     return   Container(
-      width: 45.sp,
-      height: 45.sp,
+      width: 52.sp,
+      height: 47.sp,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15.sp))
       ),
       child: IconButton.filledTonal(
-
-        // onPressed: () {
-        //   bloc.add(ChatSendBtnEvent());
-        // },
         icon:  SvgPicture.asset('assets/images/paper-plane.svg'),
         style: ButtonStyle(
-          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
+          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.sp))),
           backgroundColor: MaterialStatePropertyAll(AppColor.red),
         ), onPressed: onPressed,
       ),
@@ -53,7 +50,6 @@ static Widget textField({required  TextEditingController? controller}){
       height: 45.sp,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: Colors.red,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5.sp), //color of shadow
@@ -65,7 +61,7 @@ static Widget textField({required  TextEditingController? controller}){
         borderRadius: BorderRadius.circular(15.sp),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(right: 40),
+        padding:  EdgeInsets.only(right: 40.sp),
         child: TextField(
           maxLines: 10,
           controller: controller,
@@ -100,22 +96,13 @@ static Future alert({required BuildContext context,  List<Widget>? actions}){
       barrierColor: Colors.transparent,
       context: context,
       builder: (context) => AlertDialog(
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: AppColor.white,
         alignment: Alignment.center,
         elevation: 20.sp,
-        title: Widgets.customText(data: 'Confirm Alert',color: AppColor.red,fontWeight: FontWeight.w700, fontSize: 30.sp,fontFamily: 'Poppins',textAlign: TextAlign.center),
-        content:  Widgets.customText(data: 'Are you sure you want to delete this message?',color: AppColor.popuptextclrContent,fontWeight: FontWeight.w400, fontSize: 14.sp,textAlign: TextAlign.center),
+        title: Widgets.customText(data: AppString.popupTitle,color: AppColor.red,fontWeight: FontWeight.w700, fontSize: 30.sp,fontFamily: 'Poppins',textAlign: TextAlign.center),
+        content:  Widgets.customText(data: AppString.content,color: AppColor.popuptextclrContent,fontWeight: FontWeight.w400, fontSize: 14.sp,textAlign: TextAlign.center),
         actions: actions,
         shadowColor: AppColor.black,
-        // [
-        //   Widgets.popUpActionBtn(text: 'Ok', onTap: () {
-        //     Navigator.pop(context);
-        //     bloc.add(ChatDeleteEvent(index: index));
-        //   }),
-        //   Widgets.popUpActionBtn(text: 'Cancel', onTap: () {
-        //     Navigator.pop(context);
-        //   }),
-        // ],
       ),
     );
 }

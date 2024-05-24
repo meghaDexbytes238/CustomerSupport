@@ -1,8 +1,12 @@
 import 'package:customersupport/config/app_color.dart';
 import 'package:customersupport/config/app_string.dart';
+import 'package:customersupport/customer_bloc/chat_bloc.dart';
+import 'package:customersupport/customer_bloc/chat_event.dart';
+import 'package:customersupport/widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,8 +19,7 @@ class CustomerSupportScreen extends StatefulWidget {
 
 class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
   TextEditingController textController = TextEditingController();
-  List <ChetMessage>tags = [];
-  List <String>defaultList = [];
+  ChatBloc bloc = ChatBloc();
   // void addTag() {
   //   setState(() {
   //     dynamicList.add(tagPreview(tagController.text));
@@ -40,91 +43,63 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
 
         ],
       ),
-     body: Padding(
-       padding:  EdgeInsets.all(25.sp),
-       child: Column(
-         children: [
-           Expanded(
-             child: Container(
-               color: AppColor.white,
-                 child: (tags.isEmpty)? const Center(child: Text('No message'))
-                     : ListView.builder(
-                   itemCount: tags.length,
+     body: BlocBuilder(
+       bloc: bloc,
+       builder: (context, state) {
+       return  Padding(
+         padding:  EdgeInsets.all(25.sp),
+         child: Column(
+           crossAxisAlignment: CrossAxisAlignment.stretch,
+           mainAxisSize: MainAxisSize.max,
+           children: [
+             Flexible(
+               child: Container(
+                // color: AppColor.red,
+                 child: (bloc.msgList.isEmpty)?  Center(child: Text('${AppString.notMsg}'))
+                     :
+                 ListView.builder(
+                   controller: bloc.controller,
+                   itemCount: bloc.msgList.length,
                    itemBuilder: (context, index) {
-                     return   !tags[index].isSender ?
+                     return   bloc.msgList[index].isSender == false ?
                      InkWell(
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.start,
                          children: [
                            CircleAvatar(
-                             child: SvgPicture.asset('assets/images/userIcon.svg'),
-                           backgroundColor: AppColor.circleAvtarBg ,),
+                             backgroundColor: AppColor.circleAvtarBg ,
+                             child: SvgPicture.asset('assets/images/userIcon.svg'),),
                            Center(
                              child: Container(
                                margin: EdgeInsets.symmetric(
-                                   vertical: 5, horizontal: 10.sp),
+                                   vertical: 5.sp, horizontal: 10.sp),
                                padding: EdgeInsets.symmetric(
-                                   horizontal: 10, vertical: 7.sp),
+                                   horizontal: 10.sp, vertical: 7.sp),
                                decoration: BoxDecoration(
                                    borderRadius: BorderRadius.circular(20.sp),
                                    color: AppColor.lightGrey
                                ),
-                               child: Text(tags[index].message),
+                               child: Widgets.customText(data: bloc.msgList[index].message,fontSize: 15.sp,fontWeight: FontWeight.w500)
                              ),
                            ),
                          ],
 
                        ),
                        onLongPress: () {
-                         showDialog(
-                           barrierColor: Colors.transparent,
-                           context: context,
-                           builder: (context) => AlertDialog(
-                             backgroundColor: Colors.white,
-                             surfaceTintColor: Colors.white,
-                             shadowColor: Colors.grey,
-                             elevation: 10,
-                             title: Text("Confirm Alert"),
-                             content: Text('Are you sure you want to delete this message?'),
-                             actions: [
-                               GestureDetector(
-                               child: Container(
-                                 width: 50.sp,
-                                 height: 50.sp,
-                                 decoration: BoxDecoration(
-                                   color: AppColor.red,
-                                   borderRadius: BorderRadius.all(Radius.circular(15.sp))
-                                 ),
-                                 child:  Center(child: Text("Ok",style: TextStyle(color: AppColor.white,fontWeight: FontWeight.bold),)),
-                               ),
-                                 onTap: () {
-                                 Navigator.pop(context);
-                                   setState(() {
-                                     tags.removeAt(index);
-                                   });
-
-                                 },
-                             ),
-                               GestureDetector(
-                                 child: Container(
-                                   width: 50.sp,
-                                   height: 50.sp,
-                                   decoration: BoxDecoration(
-                                       color: AppColor.red,
-                                       borderRadius: BorderRadius.all(Radius.circular(15.sp))
-                                   ),
-                                   child:  Center(child: Text("Cancel",style: TextStyle(color:AppColor.white,fontWeight: FontWeight.bold),)),
-                                 ),
-                                 onTap: () {
-Navigator.pop(context);
-                                 },
-                               ),
-                             ],
-                           ),
+                         Widgets.alert(context: context,
+                             actions:
+                           [
+                             Widgets.popUpActionBtn(text: 'Ok', onTap: () {
+                               Navigator.pop(context);
+                               bloc.add(ChatDeleteEvent(index: index));
+                             }),
+                             Widgets.popUpActionBtn(text: 'Cancel', onTap: () {
+                               Navigator.pop(context);
+                             }),
+                           ],
                          );
                        },
                      ):
-
                      Padding(
                        padding:  EdgeInsets.only(left: 50.sp),
                        child: InkWell(
@@ -142,15 +117,16 @@ Navigator.pop(context);
                                      borderRadius: BorderRadius.circular(20.sp),
                                      color: AppColor.red
                                  ),
-                                 child: Text(tags[index].message,),
+                           child: Widgets.customText(data: bloc.msgList[index].message,fontSize: 15.sp,fontWeight: FontWeight.w500,color: AppColor.white)
+
                                ),
                              ),
                              Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(image: AssetImage('assets/images/userImg.png')),
-                                borderRadius: BorderRadius.circular(30.sp),
-                                border: Border.all(width: 2.sp,color: AppColor.red)
-                              ),
+                               decoration: BoxDecoration(
+                                   image: const DecorationImage(image: AssetImage('assets/images/userImg.png')),
+                                   borderRadius: BorderRadius.circular(30.sp),
+                                   border: Border.all(width: 2.sp,color: AppColor.red)
+                               ),
                                height: 38.sp,
                                width: 38.sp,
                                margin: EdgeInsets.only(top: 5.sp),
@@ -158,124 +134,87 @@ Navigator.pop(context);
                            ],
                          ),
                          onLongPress: () {
-                           showDialog(
-                             barrierColor: Colors.transparent,
+                           Widgets.alert(
                              context: context,
-                             builder: (context) => AlertDialog(
-                               backgroundColor: Colors.white,
-                               elevation: 10,
-                               title: Text("Delete msg?"),
-                               actions: [
-                                 GestureDetector(
-                                   child: Container(
-                                     width: 50.sp,
-                                     height: 50.sp,
-                                     decoration: BoxDecoration(
-                                         color: AppColor.red,
-                                         borderRadius: BorderRadius.all(Radius.circular(15.sp))
-                                     ),
-                                     child:  Center(child: Text("Ok",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
-                                   ),
-                                   onTap: () {
-                                     Navigator.pop(context);
-                                     setState(() {
-                                      tags.removeAt(index);
-                                     });
-                                   },
-                                 ),
-                                 TextButton(
-                                   onPressed: () {
-                                     Navigator.pop(context);
-                                   },
-                                   child: Text('Cancel'),
-                                   style: ButtonStyle(
-                                       foregroundColor:
-                                       MaterialStatePropertyAll(Colors.red)),
-                                 ),
-                               ],
-                             ),
+                             actions:
+                             [
+                               Widgets.popUpActionBtn(text: 'Ok', onTap: () {
+                                 Navigator.pop(context);
+                                 bloc.add(ChatDeleteEvent(index: index));
+                               }),
+                               Widgets.popUpActionBtn(text: 'Cancel', onTap: () {
+                                 Navigator.pop(context);
+                               }),
+                             ],
                            );
                          },
                        ),
                      );
                    },
                  ),
-       ),),
-           Stack(
-        children: [
-           Container(
-            height: 50.sp,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5.sp), //color of shadow
-                  blurRadius: 7,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(15.sp),
-              //color: Colors.red,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 40),
-              child: TextField(
-                maxLines: 2,
-                 controller: textController,
-                decoration: InputDecoration(
-                  filled: true,
-                  border: InputBorder.none,
-                  fillColor: AppColor.white,
-                  hintText: 'Type here...',
-                  prefixIcon: const Icon(Icons.search),
-                ),
-              ),
-            ),
-          ),
-           Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              width: 50.sp,
-              height: 50.sp,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15.sp))
-              ),
-              child: IconButton.filledTonal(
-                onPressed: () {
-                 setState(() {
+               ),),
+             Stack(
+               children: [
+                 Container(
+                   height: (MediaQuery.of(context).viewInsets.bottom == 0) ? 45.sp : 0,
+                   clipBehavior: Clip.antiAlias,
+                   decoration: BoxDecoration(
+                     color: Colors.red,
+                     boxShadow: [
+                       BoxShadow(
+                         color: Colors.grey.withOpacity(0.5.sp), //color of shadow
+                         blurRadius: 7,
+                         offset: const Offset(0, 1),
+                       ),
+                     ],
+                     shape: BoxShape.rectangle,
+                     borderRadius: BorderRadius.circular(15.sp),
+                     //color: Colors.red,
+                   ),
+                   child: Padding(
+                     padding:  EdgeInsets.only(right: 40.sp),
+                     child: TextField(
+                       maxLines: 2,
+                       controller: bloc.textController,
+                       decoration: InputDecoration(
+                         filled: true,
+                         border: InputBorder.none,
+                         fillColor: AppColor.white,
+                         hintText: 'Type here...',
+                         prefixIcon: const Icon(Icons.search),
+                       ),
+                     ),
+                   ),
+                 ),
+                 Align(
+                   alignment: Alignment.bottomRight,
+                   child: Widgets.sendBtn(
+                     onPressed: () {
+                       if(bloc.textController.text.isNotEmpty){
+                         bloc.add(ChatSendBtnEvent());
+                       }
+         bloc.controller.animateTo( bloc.controller.position.maxScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.linear);
+                   },)
 
-                   tags.add(ChetMessage(message: AppString.defaultMsg,isSender: false));
-                   tags.add(ChetMessage(message: textController.text,isSender: true));
-                   textController.text = '';
-                   print(" tag list : $defaultList");
-                   print(" tag list : $tags");
-                 });
+                 ),
+               ],
 
-                },
-                icon:  SvgPicture.asset('assets/images/paper-plane.svg'),
-                style: ButtonStyle(
-                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-                  backgroundColor: MaterialStatePropertyAll(AppColor.red),
-                ),
-              ),
-            ),
-          ),
-        ],
+             ),
+           ],
+         ),
+       );
+     },),
 
-           ),
-         ],
-       ),
-     ),
+
+
      // bottomNavigationBar: TextFormField(),
 
     );
   }
 }
 
-class ChetMessage{
+class ChatMessage{
   bool isSender = false;
   String message = "";
-  ChetMessage({this.isSender = false, required this.message});
+  ChatMessage({this.isSender = false, required this.message});
 }
